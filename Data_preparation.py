@@ -1,5 +1,6 @@
 # Import libraries
 
+import faiss
 from transformers import BertTokenizer, TFBertModel
 import pdfplumber
 import numpy as np
@@ -86,3 +87,22 @@ np.save("vectors.npy", vectors_array)
 np.save("pages.npy", pages_array)
 
 print("Vecteurs et numéros de pages sauvegardés.")
+
+
+# Charger les vecteurs et les numéros de pages
+vectors = np.load('vectors.npy')
+pages = np.load('pages.npy')
+vectors = np.squeeze(vectors)
+
+dimension = vectors.shape[1]
+
+# Création de l'index
+
+index = faiss.IndexFlatL2(dimension)
+index.add(vectors)
+print(f"Nombre de vecteurs indexés : {index.ntotal}")
+
+# Sauvegarde de l'index
+
+faiss.write_index(index, "faiss_index.bin")
+print("Index FAISS sauvegardé avec succès")
